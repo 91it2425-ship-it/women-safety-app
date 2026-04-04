@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_dark">#6C3483</color>
+    <color name="purple_light">#9B59B6</color>
+    <color name="sos_red">#E74C3C</color>
+    <color name="green_safe">#27AE60</color>
+    <color name="blue_ai">#2980B9</color>
+    <color name="orange">#E67E22</color>
+    <color name="bg_light">#F9F5FF</color>
+    <color name="text_primary">#2C3E50</color>
+    <color name="text_secondary">#7F8C8D</color>
+    <color name="card_bg">#FFFFFF</color>
+    <color name="colorPrimary">#9B59B6</color>
+    <color name="colorPrimaryDark">#6C3483</color>
+    <color name="colorAccent">#E74C3C</color>
+</resources>
