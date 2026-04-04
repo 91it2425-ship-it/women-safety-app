@@ -1,0 +1,38 @@
+# Backend - Maven
+backend/target/
+backend/.mvn/
+*.jar
+*.war
+*.class
+
+# Android
+android-app/.gradle/
+android-app/local.properties
+android-app/app/build/
+android-app/build/
+android-app/.idea/
+*.iml
+*.apk
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.ipr
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# H2 database files
+*.db
+
+# Logs
+*.log
+
+# Node (if any tooling)
+node_modules/

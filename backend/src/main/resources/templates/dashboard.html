@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Women's Safety App – Live Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f0ff 0%, #fff0f5 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #9b59b6 0%, #e91e8c 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        header .subtitle {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #2ecc71;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        /* Stats cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover { transform: translateY(-2px); }
+
+        .stat-card .value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #9b59b6;
+        }
+
+        .stat-card .label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-danger {
+            background: #ff6b9d;
+            color: white;
+        }
+        .btn-danger:hover { background: #e91e8c; }
+
+        .btn-secondary {
+            background: white;
+            color: #9b59b6;
+            border: 2px solid #9b59b6;
+        }
+        .btn-secondary:hover { background: #f5f0ff; }
+
+        .auto-refresh-badge {
+            display: flex;
+            align-items: center;
+            background: #e8f5e9;
+            color: #27ae60;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        /* Alerts table card */
+        .table-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 18px 24px;
+            background: linear-gradient(90deg, #f5f0ff, #fff0f5);
+            border-bottom: 1px solid #ebebeb;
+            font-weight: 700;
+            color: #6c3483;
+            font-size: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f9f5ff;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #9b59b6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover { background: #fdf8ff; }
+
+        tbody td {
+            padding: 14px 16px;
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+
+        /* Trigger badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-button   { background: #fde8f0; color: #c0392b; }
+        .badge-voice    { background: #e8f5e9; color: #27ae60; }
+        .badge-ai       { background: #e8f4fd; color: #2980b9; }
+
+        /* Status badges */
+        .status-sent         { color: #e67e22; font-weight: 600; }
+        .status-acknowledged { color: #2980b9; font-weight: 600; }
+        .status-responded    { color: #27ae60; font-weight: 600; }
+
+        /* New alert animation */
+        @keyframes flashGreen {
+            0%   { background: #c8f7c5; }
+            100% { background: transparent; }
+        }
+
+        .new-alert { animation: flashGreen 2s ease-out; }
+
+        /* Maps link */
+        .maps-link {
+            color: #9b59b6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .maps-link:hover { text-decoration: underline; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #bbb;
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+        .empty-state p { font-size: 0.95rem; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #bbb;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.2rem; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            thead th:nth-child(4),
+            tbody td:nth-child(4) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>🛡️ Women's Safety App</h1>
+        <div class="subtitle">Live Alert Dashboard</div>
+    </div>
+    <div>
+        <span class="status-dot"></span>
+        <span id="liveStatus" style="font-size:0.85rem;">Live – Auto-refreshing</span>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="value" id="totalAlerts">0</div>
+            <div class="label">Total Alerts</div>
+        </div>
+        <div class="stat-card">
+            <div class="value" id="totalToday">0</div>
+            <div class="label">Alerts Today</div>
+        </div>
+        <div class="stat-card">
+            <div class="value" id="buttonCount">0</div>
+            <div class="label">SOS Button</div>
+        </div>
+        <div class="stat-card">
+            <div class="value" id="voiceCount">0</div>
+            <div class="label">Voice Detected</div>
+        </div>
+        <div class="stat-card">
+            <div class="value" id="aiCount">0</div>
+            <div class="label">AI Detected</div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="btn btn-danger" onclick="clearAllAlerts()">🗑️ Clear All Alerts</button>
+        <button class="btn btn-secondary" onclick="refreshNow()">🔄 Refresh Now</button>
+        <div class="auto-refresh-badge">
+            <span class="status-dot" style="background:#27ae60;width:8px;height:8px;margin-right:6px;"></span>
+            Auto-refresh every 2s
+        </div>
+        <span id="lastRefresh" style="font-size:0.8rem;color:#aaa;margin-left:auto;"></span>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        <div class="table-header">📋 Alert Feed</div>
+        <div id="tableWrapper">
+            <div class="empty-state">
+                <div class="icon">🔕</div>
+                <p>No alerts yet. Press SOS on the app to send one!</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>Women's Safety Smart App – Hackathon Prototype 2024 &nbsp;|&nbsp; Backend: Spring Boot + H2 + Twilio</footer>
+
+<script>
+    const API_BASE = '';
+    let allAlerts = [];
+    let knownIds = new Set();
+
+    async function fetchAlerts() {
+        try {
+            const res = await fetch(API_BASE + '/api/alerts?size=100');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            return data.alerts || [];
+        } catch (e) {
+            console.error('Fetch error:', e);
+            return null;
+        }
+    }
+
+    function formatTime(ts) {
+        const d = new Date(ts);
+        return d.toLocaleTimeString() + ' ' + d.toLocaleDateString();
+    }
+
+    function triggerBadge(trigger) {
+        const map = {
+            'BUTTON':           '<span class="badge badge-button">🆘 SOS Button</span>',
+            'VOICE_DETECTED':   '<span class="badge badge-voice">🎤 Voice</span>',
+            'AI_SCREAM_DETECTED': '<span class="badge badge-ai">🤖 AI Detected</span>'
+        };
+        return map[trigger] || trigger;
+    }
+
+    function statusClass(status) {
+        return {
+            'SENT':         'status-sent',
+            'ACKNOWLEDGED': 'status-acknowledged',
+            'RESPONDED':    'status-responded'
+        }[status] || '';
+    }
+
+    function mapsLink(lat, lon) {
+        const url = `https://maps.google.com/?q=${lat},${lon}`;
+        return `<a class="maps-link" href="${url}" target="_blank" title="Open in Google Maps">
+                    📍 ${lat.toFixed(4)}, ${lon.toFixed(4)}
+                </a>`;
+    }
+
+    function updateStats(alerts) {
+        const today = new Date().toDateString();
+        document.getElementById('totalAlerts').textContent = alerts.length;
+        document.getElementById('totalToday').textContent =
+            alerts.filter(a => new Date(a.timestamp).toDateString() === today).length;
+        document.getElementById('buttonCount').textContent =
+            alerts.filter(a => a.trigger === 'BUTTON').length;
+        document.getElementById('voiceCount').textContent =
+            alerts.filter(a => a.trigger === 'VOICE_DETECTED').length;
+        document.getElementById('aiCount').textContent =
+            alerts.filter(a => a.trigger === 'AI_SCREAM_DETECTED').length;
+    }
+
+    function renderTable(alerts) {
+        const wrapper = document.getElementById('tableWrapper');
+
+        if (!alerts || alerts.length === 0) {
+            wrapper.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">🔕</div>
+                    <p>No alerts yet. Press SOS on the app to send one!</p>
+                </div>`;
+            return;
+        }
+
+        const newIds = new Set(alerts.map(a => a.id));
+        const addedIds = [...newIds].filter(id => !knownIds.has(id));
+
+        let rows = alerts.map(a => {
+            const isNew = addedIds.includes(a.id);
+            return `<tr class="${isNew ? 'new-alert' : ''}"
+                        onclick="window.open('https://maps.google.com/?q=${a.latitude},${a.longitude}','_blank')">
+                <td>${formatTime(a.timestamp)}</td>
+                <td>${triggerBadge(a.trigger)}</td>
+                <td>${mapsLink(a.latitude, a.longitude)}</td>
+                <td><span class="${statusClass(a.status)}">${a.status}</span></td>
+                <td style="color:#aaa;font-size:0.78rem">${a.userId || 'demo-user'}</td>
+            </tr>`;
+        }).join('');
+
+        wrapper.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Trigger</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>User</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+
+        knownIds = newIds;
+    }
+
+    async function refresh() {
+        const alerts = await fetchAlerts();
+        if (alerts !== null) {
+            allAlerts = alerts;
+            updateStats(alerts);
+            renderTable(alerts);
+            document.getElementById('lastRefresh').textContent =
+                'Last refresh: ' + new Date().toLocaleTimeString();
+        }
+    }
+
+    async function clearAllAlerts() {
+        if (!confirm('Clear all alerts? This cannot be undone.')) return;
+        try {
+            await fetch(API_BASE + '/api/alerts', { method: 'DELETE' });
+            knownIds = new Set();
+            await refresh();
+        } catch (e) {
+            alert('Error clearing alerts: ' + e.message);
+        }
+    }
+
+    function refreshNow() {
+        refresh();
+    }
+
+    // Initial load + auto-refresh every 2 seconds
+    refresh();
+    setInterval(refresh, 2000);
+</script>
+
+</body>
+</html>

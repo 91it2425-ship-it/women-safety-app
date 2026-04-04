@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Women\'s Safety App</string>
+    <string name="sos_button">SOS</string>
+    <string name="voice_button">Voice Detection Simulator</string>
+    <string name="ai_button">AI Detection Simulator</string>
+    <string name="gps_locked">✅ GPS Locked</string>
+    <string name="gps_acquiring">⏳ Acquiring...</string>
+    <string name="location_unavailable">Location unavailable</string>
+    <string name="alert_sent">Alert sent + GPS attached</string>
+    <string name="test_mode_on">Test Mode: ON</string>
+    <string name="test_mode_off">Test Mode: OFF</string>
+</resources>
