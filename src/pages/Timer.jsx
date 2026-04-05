@@ -64,6 +64,7 @@ export default function Timer() {
     localStorage.setItem('timerEnd', end.toString())
     setTimeLeft(secs)
     setExpired(false)
+    setRunning(true)
   }
 
   const formatTime = (s) => {

@@ -134,10 +134,15 @@ export default function Home({ onFakeCall }) {
         <button
           onClick={() => {
             if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(pos => {
-                const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`
-                navigator.clipboard.writeText(url).then(() => alert('Location link copied!'))
-              })
+              navigator.geolocation.getCurrentPosition(
+                pos => {
+                  const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`
+                  navigator.clipboard.writeText(url).then(() => alert('Location link copied!'))
+                },
+                () => alert('Could not get location. Please enable GPS permissions.')
+              )
+            } else {
+              alert('Geolocation is not supported by your browser.')
             }
           }}
           className="bg-gradient-to-br from-blue-600/30 to-blue-800/30 border border-blue-500/30 rounded-xl p-4 flex flex-col items-center gap-2 active:scale-95 transition-transform hover:border-blue-500/60"
