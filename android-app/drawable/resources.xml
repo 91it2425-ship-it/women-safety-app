@@ -1,0 +1,5 @@
+<!-- Drawable Resources -->
+<!-- Add your drawable resources here -->
+<resources>
+    <drawable name="logo">@drawable/logo</drawable>
+</resources>
