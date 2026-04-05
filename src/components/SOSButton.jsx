@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
 
+const LOCATION_TIMEOUT_MS = 5000
+
 export default function SOSButton({ contacts }) {
   const [state, setState] = useState('idle') // idle | countdown | sending | sent
   const [countdown, setCountdown] = useState(3)
@@ -50,7 +52,7 @@ export default function SOSButton({ contacts }) {
         setMessage(msg)
         simulateSendSMS(msg)
       },
-      { timeout: 5000 }
+      { timeout: LOCATION_TIMEOUT_MS }
     )
   }
 

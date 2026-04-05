@@ -10,14 +10,17 @@ export default function Timer() {
 
   useEffect(() => {
     const timerEnd = localStorage.getItem('timerEnd')
+    const timerTotal = localStorage.getItem('timerTotal')
     if (timerEnd) {
       const end = parseInt(timerEnd)
       const left = Math.floor((end - Date.now()) / 1000)
       if (left > 0) {
+        if (timerTotal) setDuration(Math.round(parseInt(timerTotal) / 60))
         setTimeLeft(left)
         setRunning(true)
       } else {
         localStorage.removeItem('timerEnd')
+        localStorage.removeItem('timerTotal')
         setExpired(true)
       }
     }
@@ -45,6 +48,7 @@ export default function Timer() {
     const secs = duration * 60
     const end = Date.now() + secs * 1000
     localStorage.setItem('timerEnd', end.toString())
+    localStorage.setItem('timerTotal', secs.toString())
     setTimeLeft(secs)
     setRunning(true)
     setExpired(false)
@@ -55,6 +59,7 @@ export default function Timer() {
     setRunning(false)
     setTimeLeft(null)
     localStorage.removeItem('timerEnd')
+    localStorage.removeItem('timerTotal')
     setExpired(false)
   }
 
@@ -62,6 +67,7 @@ export default function Timer() {
     const secs = duration * 60
     const end = Date.now() + secs * 1000
     localStorage.setItem('timerEnd', end.toString())
+    localStorage.setItem('timerTotal', secs.toString())
     setTimeLeft(secs)
     setExpired(false)
     setRunning(true)
@@ -74,7 +80,9 @@ export default function Timer() {
     return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
   }
 
-  const progress = timeLeft !== null ? (timeLeft / (duration * 60)) * 100 : 0
+  const progress = timeLeft !== null
+    ? (timeLeft / (duration * 60)) * 100
+    : 0
   const circumference = 2 * Math.PI * 80
 
   return (

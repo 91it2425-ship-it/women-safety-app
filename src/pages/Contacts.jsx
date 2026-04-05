@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Users, Plus, Trash2, Edit3, Phone, Check, X } from 'lucide-react'
 
+const STORAGE_KEY = 'emergencyContacts'
+const encode = (data) => btoa(unescape(encodeURIComponent(JSON.stringify(data))))
+const decode = (str) => { try { return JSON.parse(decodeURIComponent(escape(atob(str)))) } catch { return [] } }
+
 export default function Contacts() {
   const [contacts, setContacts] = useState([])
   const [form, setForm] = useState({ name: '', phone: '' })
@@ -9,13 +13,13 @@ export default function Contacts() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const saved = localStorage.getItem('emergencyContacts')
-    if (saved) setContacts(JSON.parse(saved))
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) setContacts(decode(saved))
   }, [])
 
   const save = (list) => {
     setContacts(list)
-    localStorage.setItem('emergencyContacts', JSON.stringify(list))
+    localStorage.setItem(STORAGE_KEY, encode(list))
   }
 
   const addContact = () => {

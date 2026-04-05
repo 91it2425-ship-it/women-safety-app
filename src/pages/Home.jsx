@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Shield, Phone, MapPin, Clock, Bell, Wifi } from 'lucide-react'
 import SOSButton from '../components/SOSButton'
 
+const CONTACTS_KEY = 'emergencyContacts'
+const decodeContacts = (str) => { try { return JSON.parse(decodeURIComponent(escape(atob(str)))) } catch { return [] } }
+
 const tips = [
   "Always share your live location with a trusted contact when traveling alone.",
   "Trust your instincts — if something feels wrong, leave immediately.",
@@ -19,8 +22,8 @@ export default function Home({ onFakeCall }) {
   const [shakeDetected, setShakeDetected] = useState(false)
 
   useEffect(() => {
-    const saved = localStorage.getItem('emergencyContacts')
-    if (saved) setContacts(JSON.parse(saved))
+    const saved = localStorage.getItem(CONTACTS_KEY)
+    if (saved) setContacts(decodeContacts(saved))
 
     const timerEnd = localStorage.getItem('timerEnd')
     if (timerEnd && parseInt(timerEnd) > Date.now()) setTimerActive(true)
@@ -52,7 +55,9 @@ export default function Home({ onFakeCall }) {
           setShakeDetected(true)
           setTimeout(() => setShakeDetected(false), 3000)
         }
-        lastX = acc.x; lastY = acc.y; lastZ = acc.z
+        lastX = acc.x
+        lastY = acc.y
+        lastZ = acc.z
         lastTime = now
       }
     }

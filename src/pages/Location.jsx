@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { MapPin, Share2, RefreshCw, Navigation, CheckCheck } from 'lucide-react'
 import LocationMap from '../components/LocationMap'
 
+const LOCATION_TIMEOUT_MS = 10000
+
 export default function Location() {
   const [position, setPosition] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -30,7 +32,7 @@ export default function Location() {
         setError('Location access denied. Please enable GPS permissions.')
         setLoading(false)
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: LOCATION_TIMEOUT_MS }
     )
   }
 
