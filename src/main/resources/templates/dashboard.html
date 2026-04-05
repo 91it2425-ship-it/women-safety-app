@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #fff;
+        }
+        th {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        button {
+            background-color: #0072ff;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .stats-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Alert Dashboard</h1>
+    <div>
+        <button onclick="clearAlerts()">Clear All</button>
+        <button onclick="refresh()">Refresh</button>
+    </div>
+    <div id="stats">
+        <div class="stats-card">Total Alerts: <span id="total-alerts">0</span></div>
+        <div class="stats-card">Pending Alerts: <span id="pending-alerts">0</span></div>
+    </div>
+    <table id="alert-table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Trigger Type</th>
+                <th>Location</th>
+                <th>Coordinates</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Alerts will be populated here -->
+        </tbody>
+    </table>
+    <script>
+        function fetchAlerts() {
+            // Fetch alerts from the server (dummy data for now)
+            const alerts = [
+                {time: '2026-04-05 18:22:33', user: 'user1', type: 'Panic', location: 'Location 1', coordinates: '(12.3456, 78.9012)', status: 'Active'},
+                {time: '2026-04-05 18:20:22', user: 'user2', type: 'SOS', location: 'Location 2', coordinates: '(34.5678, 90.1234)', status: 'Resolved'}
+            ];
+
+            const tableBody = document.getElementById('alert-table').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear the table before updating
+
+            alerts.forEach(alert => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).textContent = alert.time;
+                row.insertCell(1).textContent = alert.user;
+                row.insertCell(2).textContent = alert.type;
+                row.insertCell(3).innerHTML = `<a href='https://www.google.com/maps?q=${alert.coordinates.replace(/\s/g, '')}' target='_blank'>${alert.location}</a>`;
+                row.insertCell(4).textContent = alert.coordinates;
+                row.insertCell(5).textContent = alert.status;
+            });
+
+            // Update stats
+            document.getElementById('total-alerts').textContent = alerts.length;
+            document.getElementById('pending-alerts').textContent = alerts.filter(alert => alert.status === 'Active').length;
+        }
+
+        function clearAlerts() {
+            // Clear alerts logic
+            const tableBody = document.getElementById('alert-table').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            document.getElementById('total-alerts').textContent = '0';
+            document.getElementById('pending-alerts').textContent = '0';
+        }
+
+        function refresh() {
+            fetchAlerts();
+        }
+
+        // Auto-refresh every 2 seconds
+        setInterval(fetchAlerts, 2000);
+
+        // Initial fetch
+        fetchAlerts();
+    </script>
+</body>
+</html>
